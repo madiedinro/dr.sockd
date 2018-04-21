@@ -1,0 +1,16 @@
+- name: Setting upstart service variables
+  set_fact:
+    service_user: nobody
+    service_respawn_limit: 100 5
+
+- name: Adding upstart Script
+  template:
+   src: upstart.j2
+   dest: /etc/init/sockd.conf
+  become: yes
+
+- name: Restarting service
+  service:
+    name: '{{service_name}}'
+    state: restarted
+  become: yes

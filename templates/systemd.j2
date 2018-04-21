@@ -1,0 +1,20 @@
+# /lib/systemd/system/{{service_name}}.service
+[Unit]
+Description=Secret Daemon
+ConditionPathExists={{service_config}}
+ConditionPathExists=!{{service_pid}}
+Wants=network-online.target
+After=network.target
+
+[Service]
+EnvironmentFile=-{{service_envfile}}
+ExecStart={{service_exec}}
+ExecReload=/bin/kill -HUP {{service_pid}}
+PIDFile={{service_pid}}
+KillMode=process
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+Alias={{service_name}}.service

@@ -1,0 +1,20 @@
+- name: Add systemd Script
+  template:
+   src: systemd.j2
+   dest: '/lib/systemd/system/{{service_name}}.service'
+  become: yes
+
+- name: Force systemd to reread configs (2.4 and above)
+  systemd: daemon_reload=yes
+  become: true
+
+- name: Enabling and restarting systemd service
+  systemd:
+    name: '{{service_name}}.service'
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: Set sockd memory limit
+  command: '/bin/systemctl set-property {{service_name}}.service MemoryLimit={{service_memory_limit}}'
+  when: service_memory_limit is defined

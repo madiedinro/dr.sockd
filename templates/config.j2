@@ -1,0 +1,23 @@
+debug: 1
+logoutput: stderr
+internal: 0.0.0.0 port = {{service_port}}
+external: {{interface}}
+socksmethod: username
+clientmethod: none
+user.privileged: root
+user.unprivileged: nobody
+timeout.connect: 15
+timeout.negotiate: 15
+timeout.io: 1800
+
+
+client pass {
+    from: 0.0.0.0/0 port 1-65535 to: 0.0.0.0/0
+    log: error
+}
+
+socks pass {
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    socksmethod: username
+    log: error
+}

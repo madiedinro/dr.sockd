@@ -1,0 +1,17 @@
+---
+service_dante_version: 1.4.2
+service_working_dir: /tmp
+service_port: 1080
+
+service_remove: false
+service_memory_limit: 100M
+
+interface: '{{ ansible_default_ipv4.alias }}'
+service_name: sockd
+service_pid: /var/run/sockd.pid
+service_config: /etc/sockd.conf
+service_envfile: /etc/default/sockd
+service_log_file: /var/log/sockd.log
+service_orig_executable: /usr/local/sbin/sockd
+service_executable: /usr/local/sbin/unknwn
+service_exec: '{{service_executable}} -f {{service_config}} -p {{service_pid}} -N 1 -n'

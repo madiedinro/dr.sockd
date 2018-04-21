@@ -1,0 +1,8 @@
+---
+
+
+- import_tasks: install.yml
+  when: service_remove == False
+  
+- import_tasks: remove.yml
+  when: service_remove

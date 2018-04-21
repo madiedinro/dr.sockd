@@ -1,0 +1,48 @@
+- name: Install Dependencies
+  apt: name={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - make
+    - gcc
+    - libpam0g-dev
+  tags: ['sockd_build']
+
+- name: Download source
+  get_url: url=http://www.inet.no/dante/files/dante-{{ service_dante_version }}.tar.gz dest={{ service_working_dir }}/dante-{{ service_dante_version }}.tar.gz
+  tags: ['sockd_build']
+
+- name: Unpack source
+  unarchive: src={{ service_working_dir }}/dante-{{ service_dante_version }}.tar.gz dest={{ service_working_dir }} copy=no
+  tags: ['sockd_build']
+
+- name: Configure
+  command: >
+    ./configure
+    chdir={{ service_working_dir }}/dante-{{ service_dante_version }}
+  tags: ['sockd_build']
+
+- name: Make
+  command: chdir={{ service_working_dir }}/dante-{{ service_dante_version }} make -j2
+  tags: ['sockd_build']
+
+- name: Install
+  command: chdir={{ service_working_dir }}/dante-{{ service_dante_version }} make install
+  tags: ['sockd_build']
+
+- name: Rename executable
+  command: 'mv {{service_orig_executable}} {{service_executable}}'
+  tags: ['sockd_build']
+
+- name: Generate sockd config
+  template:
+   src: config.j2
+   dest: /etc/sockd.conf
+  tags: ['socks_config']
+
+- import_tasks: upstart.yml
+  tags: ['socks_config']
+  when: ansible_service_mgr == 'upstart'
+
+- import_tasks: systemd.yml
+  tags: ['socks_config']
+  when: ansible_service_mgr == 'systemd'
+
